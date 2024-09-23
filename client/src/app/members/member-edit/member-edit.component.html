@@ -84,7 +84,7 @@
                     </form>
                 </tab>                
                 <tab heading="Edit Photos" #photoTab="tab">
-                    <p>Photo edit will go here</p>
+                    <app-photo-editor [member]="member" (memberChange)="onMemberChange($event)"/>
                 </tab>
             </tabset>
         </div>
