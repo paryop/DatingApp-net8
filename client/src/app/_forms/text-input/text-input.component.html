@@ -1,0 +1,21 @@
+<div class="mg-3 form-floating">
+    <input 
+    [type]="type()" 
+    [class.is-invalid]="control.invalid && control.touched"
+    class="form-control" 
+    name="password"
+    [formControl] = "control"
+    placeholder="{{ label() }}"/>
+    <label>{{ label() }}</label>
+
+    <div *ngIf="control.hasError('required')"
+    class="invalid-feedback text-start">Please enter {{ label() }}</div>
+    <div *ngIf="control.hasError('minlength')"
+        class="invalid-feedback text-start">{{ label() }} must be atleast 
+        {{ control.errors?.['minlength']?.requiredLength }} characters
+    </div>
+    <div *ngIf="control.hasError('maxlength')"
+        class="invalid-feedback text-start">{{ label() }} must be atmost
+        {{ control.errors?.['maxlength']?.requiredLength }} characters
+    </div>       
+</div>

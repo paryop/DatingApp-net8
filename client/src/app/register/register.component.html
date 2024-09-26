@@ -1,26 +1,76 @@
-<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+<form [formGroup]="registerForm" (ngSubmit)="register()">
     <h2 class="text-center text-primary">Sign Up</h2>
     <hr/>
-    <div class="mg-3 form-floating">
+    <!-- <div class="mg-3 form-floating">
         <input 
         type="text" 
+        [class.is-invalid]="registerForm.get('username')?.errors && registerForm.get('username')?.touched"
         class="form-control" 
         name="username"
-        [(ngModel)]="model.username"
+        formControlName = "username"
         placeholder="Username"/>
         <label>Username</label>
+        <div class="invalid-feedback text-start">Please enter username</div>
     </div>    
     <div class="mg-3 form-floating">
         <input 
         type="password" 
+        [class.is-invalid]="registerForm.get('password')?.errors && registerForm.get('password')?.touched"
         class="form-control" 
         name="password"
-        [(ngModel)]="model.password"
+        formControlName = "password"
         placeholder="Password"/>
         <label>Password</label>
+        <div class="invalid-feedback text-start">Please enter password</div>
     </div>
-    <div class="form-group text-center">
-        <button class="btn btn-success me-2" type="submit">Register</button>
+    <div class="mg-3 form-floating">
+        <input 
+        type="password" 
+        [class.is-invalid]="registerForm.get('confirmPassword')?.errors && registerForm.get('confirmPassword')?.touched"
+        class="form-control" 
+        name="password"
+        formControlName = "confirmPassword"
+        placeholder="Confirm Password"/>
+        <label>Confirm Password</label>
+        <div class="invalid-feedback text-start">Please enter confirm password</div>
+    </div> -->
+    <div class="mb-3">
+        <label style="margin-right: 10px;">I am a:</label>
+        <label class="form-check-label">
+            <input type="radio" class="form-check-input" value="male" formControlName="gender"/>Male
+        </label>
+        <label class="form-check-label">
+            <input type="radio" class="form-check-input" value="female" formControlName="gender"/>Female
+        </label>
+    </div>
+    <app-text-input formControlName="username" label="Username"></app-text-input>
+    <app-text-input formControlName="knownAs" label="Known As"></app-text-input>
+    <app-date-picker 
+    formControlName="dateOfBirth" 
+    label="Date Of Birth"
+    [maxDate]="maxDate"></app-date-picker>
+    <app-text-input formControlName="city" label="City"></app-text-input>
+    <app-text-input formControlName="country" label="Country"></app-text-input>
+    <app-text-input formControlName="password" label="Password" type="password"></app-text-input>
+    <app-text-input formControlName="confirmPassword" label="Confirm Password" type="password"></app-text-input>
+    @if(registerForm.hasError('misMatch')){
+        <div style="color: red;text-align: start;">
+            Password's dont match
+        </div>
+    }
+
+    @if(validationErrors){
+        <div class="text-danger text-start">
+            <ul>
+                @for(err of validationErrors;track $index){
+                    <li>{{err}}</li>
+                }
+            </ul>
+        </div>
+    }
+   
+    <div class="form-group text-center">        
+        <button class="btn btn-success me-2" [disabled]="!registerForm.dirty" type="submit">Register</button>
         <button class="btn btn-default me-2" type="button" (click)="cancel()">Cancel</button>
-    </div>
+    </div>    
 </form>

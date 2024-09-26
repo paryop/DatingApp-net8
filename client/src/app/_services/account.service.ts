@@ -15,7 +15,6 @@ export class AccountService {
     return this.httpClient.post<User>(this.url + "account/login", model).pipe(
       map(user => {
         if(user){
-          console.log(user)
           this.setCurrentUser(user);
         }
       })

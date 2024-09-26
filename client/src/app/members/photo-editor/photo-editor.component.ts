@@ -48,9 +48,6 @@ export class PhotoEditorComponent implements OnInit {
         });
 
         this.memberChange.emit(updatedMember);
-
-        // this.memberService.members.update(members => members.map(m => m.userName == updatedMember.userName ? updatedMember : m))
-        // console.log(this.memberService.members());
       }
     })
   }
@@ -87,6 +84,16 @@ export class PhotoEditorComponent implements OnInit {
     this.uploader.onSuccessItem = (item, response, status, headers) => {
       const photo = JSON.parse(response);
       const updateMember = {...this.member()};
+
+      const user = this.accountService.currentUser();
+        if(user){
+          user.photoUrl = photo.url;
+          this.accountService.setCurrentUser(user)
+        }
+
+      if(updateMember.photos.length == 0){
+        photo.isMain = true;
+      }
       updateMember.photos.push(photo);
       this.memberChange.emit(updateMember);
     }   
