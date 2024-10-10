@@ -3,14 +3,18 @@ import { inject, Injectable, signal } from '@angular/core';
 import { User } from '../_models/user';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { LikesService } from './likes.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
   url = environment.apiUrl //"https://localhost:5001/api/account/"
+  private likeService = inject(LikesService);
   httpClient = inject(HttpClient);
   currentUser = signal<User | null>(null);
+
+
   login(model: any){
     return this.httpClient.post<User>(this.url + "account/login", model).pipe(
       map(user => {
@@ -40,6 +44,7 @@ export class AccountService {
   setCurrentUser(user: User){
       localStorage.setItem("user", JSON.stringify(user));
       this.currentUser.set(user); 
+      this.likeService.getLikeIds();
   }
 
   constructor() { }
