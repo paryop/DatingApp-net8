@@ -1,0 +1,52 @@
+<div class="card">
+    <div class="card-body">
+        @if(messages().length == 0){
+            <p>No messages yet!!!</p>
+        } @else {
+            <ul class="chat">
+                @for(message of messages(); track message.id){
+                <li>
+                    <div>
+                        <span class="chat-img float-end">
+                            <img src="{{ message.senderPhotoUrl }}" alt="" class="rounded-circle">
+                        </span>
+                        <div class="chat-body">
+                            <div class="header">
+                                <small class="text-muted">
+                                    <span class="fa fa-clock-o">
+                                        {{ message.messageSent | timeAgo}}
+                                    </span>
+                                    @if(!message.dateRead && message.senderUsername != userName()){
+                                        <span class="text-danger">(unread)</span>
+                                    }
+                                    @if(message.dateRead && message.senderUsername != userName()){
+                                        <span class="text-success">(read {{ message.dateRead | timeAgo}})</span>
+                                    }
+                                </small>
+                            </div>
+                            <p>{{ message.content }}</p>
+                        </div>
+                    </div>
+                </li>
+            }
+            </ul>
+        }
+    </div>
+    <div class="card-footer">
+        <form #msgForm="ngForm" (ngSubmit)="sendMessage()">
+            <div class="input-group">
+                <input 
+                type="text" 
+                name="content"
+                [(ngModel)]="content"
+                class="form-control input-sm"                  
+                placeholder="Send a private message">
+                <div class="input-group-append">
+                    <button [disabled]="!msgForm.valid" class="btn btn-primary" type="submit">Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
