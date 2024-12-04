@@ -64,10 +64,6 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("BLOB");
 
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("TEXT");

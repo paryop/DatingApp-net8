@@ -27,7 +27,7 @@ namespace API.Controllers
             var sender = await userRepository.GetUserByUserameAsync(username);
             var recipient = await userRepository.GetUserByUserameAsync(messageDto.RecipientUsername);
 
-            if(sender == null || recipient == null) return BadRequest("Cannot send message at this time!!!");
+            if(sender == null || recipient == null || sender.UserName == null || recipient.UserName == null) return BadRequest("Cannot send message at this time!!!");
 
             var message = new Message
             {

@@ -17,12 +17,12 @@ namespace API.Data.Migrations
                 nullable: false,
                 defaultValue: new byte[0]);
 
-            migrationBuilder.AddColumn<byte[]>(
-                name: "PasswordSalt",
-                table: "Users",
-                type: "BLOB",
-                nullable: false,
-                defaultValue: new byte[0]);
+            // migrationBuilder.AddColumn<byte[]>(
+            //     name: "PasswordSalt",
+            //     table: "Users",
+            //     type: "BLOB",
+            //     nullable: false,
+            //     defaultValue: new byte[0]);
         }
 
         /// <inheritdoc />
@@ -32,9 +32,9 @@ namespace API.Data.Migrations
                 name: "PasswordHash",
                 table: "Users");
 
-            migrationBuilder.DropColumn(
-                name: "PasswordSalt",
-                table: "Users");
+            // migrationBuilder.DropColumn(
+            //     name: "PasswordSalt",
+            //     table: "Users");
         }
     }
 }

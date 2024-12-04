@@ -8,17 +8,18 @@ using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
 
 namespace API.Data
 {
-    public class UserRepository(DataContext context, IMapper mapper) : IUserRepository
+    public class UserRepository(DataContext context, IMapper mapper, UserManager<AppUser> userManager) : IUserRepository
     {
         public async Task<MemberDto?> GetMemberAsync(string username)
         {
-            return await context.Users
-            .Where(x=>x.UserName == username)
+            return await userManager.Users
+            .Where(x=>x.NormalizedUserName == username.ToUpper())
             .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         }
@@ -26,9 +27,9 @@ namespace API.Data
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
 
-            var query = context.Users.AsQueryable();
+            var query = userManager.Users.AsQueryable();
 
-            query = query.Where(u => u.UserName != userParams.CurrentUsername);
+            query = query.Where(u => u.NormalizedUserName != userParams.CurrentUsername!.ToUpper());
 
             if(userParams.Gender != null)
             {
@@ -52,12 +53,12 @@ namespace API.Data
 
         public async Task<AppUser?> GetUserByIdAsync(int id)
         {
-            return await context.Users.FindAsync(id);
+            return await userManager.Users.FirstAsync(x => x.Id == id);
         }
 
         public async Task<AppUser?> GetUserByUserameAsync(string username)
         {
-            return await context.Users
+            return await userManager.Users
             .Include(p => p.Photos)            
             .SingleOrDefaultAsync<AppUser>(u => u.UserName == username);
 
@@ -65,7 +66,7 @@ namespace API.Data
 
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            return await context.Users
+            return await userManager.Users
             .Include(p => p.Photos)
             .ToListAsync();
         }

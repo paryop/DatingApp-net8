@@ -25,7 +25,6 @@ export class MessagesComponent implements OnInit {
   }
 
   loadMessages(){
-    console.log(this.container);
     this.messageService.getMessages(this.pageNumber, this.pageSize, this.container)
   }
 
