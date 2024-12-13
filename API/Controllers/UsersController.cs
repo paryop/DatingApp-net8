@@ -16,7 +16,7 @@ namespace API.Controllers
         IMapper mapper, 
         IPhotoService photoService): BaseApiController
     {
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Member")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {

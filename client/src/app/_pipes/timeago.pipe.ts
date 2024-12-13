@@ -29,8 +29,8 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
 		let years = Math.round(Math.abs(days/365));
 		if (Number.isNaN(seconds)){
 			return '';
-		} else if (seconds <= 45) {
-			return 'a few seconds ago';
+		} else if (seconds <= 59) {
+			return seconds + ' seconds ago';
 		} else if (seconds <= 90) {
 			return 'a minute ago';
 		} else if (minutes <= 45) {

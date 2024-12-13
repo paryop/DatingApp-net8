@@ -5,12 +5,16 @@ using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 namespace API.Data
 {
     public class MessageRepository(DataContext context, IMapper mapper) : IMessageRepository
     {
+        public void AddGroup(Group group)
+        {
+            context.Groups.Add(group);
+        }
+
         public void AddMessage(Message message)
         {
             context.Messages.Add(message);
@@ -22,9 +26,29 @@ namespace API.Data
 
         }
 
+        public async Task<Connection?> GetConnection(string connectionId)
+        {
+            return await context.Connections.FindAsync(connectionId);
+        }
+
+        public async Task<Group?> GetGroupForConnection(string connectionId)
+        {
+            return await context.Groups
+                .Include(x => x.Connections)
+                .Where(x => x.Connections.Any(c => c.ConnectionId == connectionId))
+                .FirstOrDefaultAsync() ;
+        }
+
         public async Task<Message?> GetMessage(int id)
         {
             return await context.Messages.FindAsync(id);
+        }
+
+        public async Task<Group?> GetMessageGroup(string groupName)
+        {
+            return await context.Groups
+                .Include(x => x.Connections)
+                .FirstOrDefaultAsync(x => x.Name == groupName);
         }
 
         public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams)
@@ -50,9 +74,7 @@ namespace API.Data
 
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
         {
-            var query = context.Messages
-            .Include(x => x.Sender).ThenInclude(x => x.Photos)
-            .Include(x => x.Recipient).ThenInclude(x => x.Photos)
+            var messages = context.Messages            
             .Where(x => 
                 x.RecipientUsername == currentUsername 
                     && x.RecipientDeleted == false 
@@ -64,7 +86,7 @@ namespace API.Data
             .OrderBy(x => x.MessageSent)
             .AsQueryable();
 
-        var unreadMessages = query.Where(x => x.DataRead == null && 
+        var unreadMessages = messages.Where(x => x.DataRead == null && 
             x.RecipientUsername == currentUsername).ToList();
 
         if (unreadMessages.Count != 0)
@@ -72,7 +94,13 @@ namespace API.Data
             unreadMessages.ForEach(x => x.DataRead = DateTime.UtcNow);
         }
 
-        return await query.ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToListAsync();
+        return await messages
+                .ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToListAsync();
+        }
+
+        public void RemoveConnection(Connection connection)
+        {
+            context.Connections.Remove(connection);
         }
 
         public async Task<bool> SaveAllAsync()
