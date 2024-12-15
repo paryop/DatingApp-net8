@@ -3,7 +3,11 @@
         @if(!messagesService.messageThread()){
             <p>No messages yet!!!</p>
         } @else {
-            <ul class="chat">
+            <ul 
+                class="chat"
+                #scrollMe
+                style="overflow: scroll; max-height: 500px; scroll-behavior: smooth;"
+            >
                 @for(message of messagesService.messageThread(); track message.id){
                 <li>
                     <div>
@@ -16,11 +20,12 @@
                                     <span class="fa fa-clock-o">
                                         {{ message.messageSent | timeAgo}}
                                     </span>
-                                    @if(!message.dateRead && message.senderUsername != userName()){
+                                    @if(message.dataRead == null && message.senderUsername != userName()){
+                                        <span>{{message.dataRead}} - {{ message.senderUsername }}</span>
                                         <span class="text-danger">(unread)</span>
                                     }
-                                    @if(message.dateRead && message.senderUsername != userName()){
-                                        <span class="text-success">(read {{ message.dateRead | timeAgo}})</span>
+                                    @if(message.dataRead && message.senderUsername != userName()){
+                                        <span class="text-success">(read {{ message.dataRead | timeAgo}})</span>
                                     }
                                 </small>
                             </div>
