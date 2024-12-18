@@ -35,11 +35,9 @@ namespace API.Controllers
         [HttpGet("{username}")]
         public async Task<ActionResult<MemberDto?>> GetUser(string username)
         {
-            // var user = await unitOfWork.UserRepository.GetUserByUserameAsync(username);
+            var currentUsername = User.GetUsername();
 
-            // if(user == null) return NotFound();
-
-            var userDto = await unitOfWork.UserRepository.GetMemberAsync(username); //mapper.Map<MemberDto>(user);
+            var userDto = await unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser: currentUsername == username); //mapper.Map<MemberDto>(user);
 
             return userDto;
         }
@@ -79,7 +77,7 @@ namespace API.Controllers
                 PublicId = result.PublicId
             };
 
-            if(user.Photos.Count == 0) photo.IsMain = true;
+            // if(user.Photos.Count == 0) photo.IsMain = true;
 
             user.Photos.Add(photo);
 
@@ -87,7 +85,7 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetUser), 
             new {username = user.UserName}, mapper.Map<PhotoDto>(photo));
 
-            return BadRequest("Problem uploading photo!!!");
+            return BadRequest("Problem adding photo!!!");
         }
 
         [HttpPut("set-main-photo/{photoId:int}")]
@@ -119,7 +117,7 @@ namespace API.Controllers
 
             if(user == null) return BadRequest("Could not find user!!!");
 
-            var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+            var photo = await unitOfWork.PhotoRepository.GetPhotoById(photoId);
 
             if(photo == null || photo.IsMain) return BadRequest("Cannot delete this as main photo!!!");
 
@@ -131,7 +129,7 @@ namespace API.Controllers
             
             user.Photos.Remove(photo);
 
-            if(await unitOfWork.Complete()) return NoContent();
+            if(await unitOfWork.Complete()) return Ok();
 
             return BadRequest("Problem deleting photo!!!");
         }

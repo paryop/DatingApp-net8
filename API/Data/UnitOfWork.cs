@@ -10,7 +10,8 @@ namespace API.Data
         DataContext context,
         IUserRepository userRepository, 
         ILikesRepository likesRepository,
-        IMessageRepository messageRepository
+        IMessageRepository messageRepository,
+        IPhotoRepository photoRepository
         ) : IUnitOfWork
     {
         public IUserRepository UserRepository => userRepository;
@@ -18,6 +19,8 @@ namespace API.Data
         public IMessageRepository MessageRepository => messageRepository;
 
         public ILikesRepository LikesRepository => likesRepository;
+
+        public IPhotoRepository PhotoRepository => photoRepository;
 
         public async Task<bool> Complete()
         {

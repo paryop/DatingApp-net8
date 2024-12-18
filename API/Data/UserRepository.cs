@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
 using API.Helpers;
@@ -10,18 +6,21 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 namespace API.Data
 {
     public class UserRepository(DataContext context, IMapper mapper, UserManager<AppUser> userManager) : IUserRepository
     {
-        public async Task<MemberDto?> GetMemberAsync(string username)
+        public async Task<MemberDto?> GetMemberAsync(string username, bool isCurrentUser)
         {
-            return await userManager.Users
+            var query = userManager.Users
             .Where(x=>x.NormalizedUserName == username.ToUpper())
             .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
-            .SingleOrDefaultAsync();
+            .AsQueryable();
+
+            if(isCurrentUser) query = query.IgnoreQueryFilters();
+
+            return await query.FirstOrDefaultAsync();   
         }
 
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
@@ -54,6 +53,15 @@ namespace API.Data
         public async Task<AppUser?> GetUserByIdAsync(int id)
         {
             return await userManager.Users.FirstAsync(x => x.Id == id);
+        }
+
+        public async Task<AppUser?> GetUserByPhotoId(int photoId)
+        {
+             return await context.Users
+                .Include(p => p.Photos)
+                .IgnoreQueryFilters()
+                .Where(p => p.Photos.Any(p => p.Id == photoId))
+                .FirstOrDefaultAsync();
         }
 
         public async Task<AppUser?> GetUserByUserameAsync(string username)
